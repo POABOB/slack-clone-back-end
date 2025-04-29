@@ -3,7 +3,6 @@ package rbac
 import (
 	"github.com/POABOB/slack-clone-back-end/pkg/auth/jwt"
 	"github.com/POABOB/slack-clone-back-end/pkg/auth/jwt/simple"
-	"github.com/POABOB/slack-clone-back-end/pkg/jwt"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
@@ -21,7 +20,7 @@ func NewRBACJWTManager(secretKey string, expiresIn int) *RBACJWTManager {
 }
 
 // GenerateToken 生成 RBAC JWT token
-func (m *RBACJWTManager) GenerateToken(claims auth.auth) (string, error) {
+func (m *RBACJWTManager) GenerateToken(claims auth.BaseClaims) (string, error) {
 	// 設置過期時間
 	claims.SetRegisteredClaims(jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(m.JWTManager.GetExpiresIn()) * time.Hour)),

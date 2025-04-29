@@ -12,7 +12,7 @@ import (
 
 // RBACMiddleware RBAC 中間件
 func RBACMiddleware(jwtManager *RBACJWTManager) gin.HandlerFunc {
-	return auth.NewJWTMiddleware(jwtManager, func(c *gin.Context, claims auth.auth) {
+	return auth.NewJWTMiddleware(jwtManager, func(c *gin.Context, claims auth.BaseClaims) {
 		c.Set("user_id", claims.GetUserID())
 		c.Set("email", claims.GetEmail())
 		c.Set("username", claims.GetUsername())

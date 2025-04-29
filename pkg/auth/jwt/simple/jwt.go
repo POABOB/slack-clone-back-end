@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/POABOB/slack-clone-back-end/pkg/auth/jwt"
-	"github.com/POABOB/slack-clone-back-end/pkg/jwt"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
@@ -24,7 +23,7 @@ func NewJWTManager(secretKey string, expiresIn int) *JWTManager {
 }
 
 // GenerateToken 生成 JWT token
-func (m *JWTManager) GenerateToken(claims auth.auth) (string, error) {
+func (m *JWTManager) GenerateToken(claims auth.BaseClaims) (string, error) {
 	// 設置過期時間
 	claims.SetRegisteredClaims(jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(m.GetExpiresIn()) * time.Hour)),
