@@ -1,8 +1,8 @@
 package rbac
 
 import (
-	"fmt"
-	"github.com/POABOB/slack-clone-back-end/pkg/auth/jwt"
+	"github.com/POABOB/slack-clone-back-end/pkg/auth"
+	jwtlib "github.com/POABOB/slack-clone-back-end/pkg/auth/jwt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,7 @@ import (
 
 // RBACMiddleware RBAC 中間件
 func RBACMiddleware(jwtManager *RBACJWTManager) gin.HandlerFunc {
-	return auth.NewJWTMiddleware(jwtManager, func(c *gin.Context, claims auth.BaseClaims) {
+	return jwtlib.NewJWTMiddleware(jwtManager, func(c *gin.Context, claims jwtlib.BaseClaims) {
 		c.Set("user_id", claims.GetUserID())
 		c.Set("email", claims.GetEmail())
 		c.Set("username", claims.GetUsername())
@@ -96,7 +96,7 @@ func RequireAllPermissions(permissions ...string) gin.HandlerFunc {
 		}
 		if len(missingPerms) > 0 {
 			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": auth.ErrForbidden})
-			_ = c.Error(fmt.Errorf("缺少以下權限: %v", missingPerms)).SetType(gin.ErrorTypePrivate)
+			_ = c.Error(auth.ErrForbidden).SetType(gin.ErrorTypePrivate)
 			c.Abort()
 			return
 		}
@@ -113,13 +113,18 @@ func extractPermissions(c *gin.Context) (map[string]struct{}, bool) {
 		return nil, false
 	}
 
-	perms, ok := raw.(map[string]struct{})
+	perms, ok := raw.([]string)
 	if !ok {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": auth.ErrInvalidToken})
 		_ = c.Error(auth.ErrInvalidToken).SetType(gin.ErrorTypePrivate)
 		return nil, false
 	}
-	return perms, true
+
+	permsMap := make(map[string]struct{})
+	for _, perm := range perms {
+		permsMap[perm] = struct{}{}
+	}
+	return permsMap, true
 }
 
 // extractRole 獲取角色資訊

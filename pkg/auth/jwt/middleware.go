@@ -1,7 +1,8 @@
-package auth
+package jwt
 
 import (
 	"errors"
+	"github.com/POABOB/slack-clone-back-end/pkg/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -15,24 +16,24 @@ func NewJWTMiddleware(jwtManager TokenManager, handler ClaimsHandler) gin.Handle
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": ErrInvalidToken})
-			_ = c.Error(ErrUnauthorized).SetType(gin.ErrorTypePrivate)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": auth.ErrInvalidToken})
+			_ = c.Error(auth.ErrInvalidToken).SetType(gin.ErrorTypePrivate)
 			return
 		}
 
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": ErrInvalidToken})
-			_ = c.Error(ErrInvalidToken).SetType(gin.ErrorTypePrivate)
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": auth.ErrInvalidToken})
+			_ = c.Error(auth.ErrInvalidToken).SetType(gin.ErrorTypePrivate)
 			return
 		}
 
 		claims, err := jwtManager.ValidateToken(parts[1])
 		if err != nil {
-			if errors.Is(err, ErrExpiredToken) {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": ErrExpiredToken})
+			if errors.Is(err, auth.ErrExpiredToken) {
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": auth.ErrExpiredToken})
 			} else {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": ErrInvalidToken})
+				c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": auth.ErrInvalidToken})
 			}
 			_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 			c.Abort()

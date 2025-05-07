@@ -1,19 +1,4 @@
-package auth
-
-import (
-	"errors"
-)
-
-var (
-	// ErrInvalidToken 無效的 token
-	ErrInvalidToken = errors.New("invalid token")
-	// ErrExpiredToken 過期的 token
-	ErrExpiredToken = errors.New("token has expired")
-	// ErrUnauthorized 沒有 Authorization Header
-	ErrUnauthorized = errors.New("unauthorized")
-	// ErrForbidden Forbidden
-	ErrForbidden = errors.New("forbidden")
-)
+package jwt
 
 // TokenManager Token 管理介面
 type TokenManager interface {
@@ -26,5 +11,5 @@ type TokenManager interface {
 	// GetExpiresIn 獲取過期時間
 	GetExpiresIn() int
 	// GetSecretKey 獲取私鑰
-	GetSecretKey() string
+	GetSecretKey() []byte
 }
