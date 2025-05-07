@@ -1,4 +1,4 @@
-package database
+package postgresql
 
 import (
 	"fmt"
@@ -9,51 +9,33 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var (
-	// DB 全局資料庫實例
-	DB *gorm.DB
-)
+// NewDatabase 資料庫連接
+func NewDatabase(cfg *config.DatabaseConfig) (*gorm.DB, error) {
+	dsn := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
+		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
+	)
 
-// InitDatabase 初始化資料庫連接
-func InitDatabase(cfg *config.DatabaseConfig) error {
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode)
-
-	var err error
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
-		return fmt.Errorf("failed to connect database: %v", err)
+		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}
 
-	// 設置連接池
-	sqlDB, err := DB.DB()
+	sqlDB, err := db.DB()
 	if err != nil {
-		return fmt.Errorf("failed to get database instance: %v", err)
+		return nil, fmt.Errorf("failed to get sql.DB: %v", err)
 	}
 
-	// 設置最大閒置連接數
-	sqlDB.SetMaxIdleConns(10)
-	// 設置最大打開連接數
-	sqlDB.SetMaxOpenConns(100)
-
-	return nil
-}
-
-// GetDB 獲取資料庫實例
-func GetDB() *gorm.DB {
-	return DB
-}
-
-// Close 關閉資料庫連接
-func Close() error {
-	if DB != nil {
-		sqlDB, err := DB.DB()
-		if err != nil {
-			return err
-		}
-		return sqlDB.Close()
+	if cfg.MaxIdleConns == 0 {
+		cfg.MaxIdleConns = 10
 	}
-	return nil
+	if cfg.MaxOpenConns == 0 {
+		cfg.MaxOpenConns = 100
+	}
+	sqlDB.SetMaxIdleConns(cfg.MaxIdleConns)
+	sqlDB.SetMaxOpenConns(cfg.MaxOpenConns)
+
+	return db, nil
 }
