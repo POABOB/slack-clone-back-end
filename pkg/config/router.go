@@ -37,8 +37,10 @@ func DefaultRouterConfig() *RouterConfig {
 	}
 }
 
-// ApplyConfig 應用路由配置
-func ApplyConfig(engine *gin.Engine, config *RouterConfig) {
+// NewGinEngine 應用路由配置
+func NewGinEngine(config *RouterConfig) *gin.Engine {
+	engine := gin.New()
+
 	// 設置模式
 	if config.EnableRequestLog {
 		engine.Use(gin.Logger())
@@ -58,4 +60,6 @@ func ApplyConfig(engine *gin.Engine, config *RouterConfig) {
 	if config.EnableRateLimit {
 		engine.Use(middleware.RateLimiter(config.RateLimitConfig))
 	}
+
+	return engine
 }

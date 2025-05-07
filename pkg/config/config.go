@@ -1,60 +1,64 @@
 package config
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 )
 
 // Config 應用配置結構
 type Config struct {
-	Server   ServerConfig   `mapstructure:"server"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Redis    RedisConfig    `mapstructure:"redis"`
-	JWT      JWTConfig      `mapstructure:"jwt"`
+	Server   ServerConfig
+	Database DatabaseConfig
+	Redis    RedisConfig
+	Router   RouterConfig
+	JWT      JWTConfig
 }
 
 // ServerConfig 服務器配置
 type ServerConfig struct {
-	Port int    `mapstructure:"port"`
-	Mode string `mapstructure:"mode"`
+	Host string
+	Port int
+	Mode string
 }
 
 // DatabaseConfig 資料庫配置
 type DatabaseConfig struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	User     string `mapstructure:"user"`
-	Password string `mapstructure:"password"`
-	DBName   string `mapstructure:"dbname"`
-	SSLMode  string `mapstructure:"sslmode"`
+	Host         string
+	Port         int
+	User         string
+	Password     string
+	DBName       string
+	SSLMode      string
+	MaxIdleConns int
+	MaxOpenConns int
 }
 
 // RedisConfig Redis 配置
 type RedisConfig struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	Password string `mapstructure:"password"`
-	DB       int    `mapstructure:"db"`
+	Host     string
+	Port     int
+	Password string
+	DB       int
 }
 
-// JWTConfig JWT 配置
 type JWTConfig struct {
-	SecretKey string `mapstructure:"secret_key"`
-	ExpiresIn int    `mapstructure:"expires_in"`
+	SecretKey []byte
+	ExpiresIn int
 }
 
-// LoadConfig 載入配置
 func LoadConfig(path string) (*Config, error) {
 	viper.SetConfigFile(path)
 	viper.AutomaticEnv()
 
+	// TODO use logger
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read config: %w", err)
 	}
 
-	var config Config
-	if err := viper.Unmarshal(&config); err != nil {
-		return nil, err
+	var cfg Config
+	if err := viper.Unmarshal(&cfg); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	return &config, nil
+	return &cfg, nil
 }
