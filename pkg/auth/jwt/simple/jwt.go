@@ -24,7 +24,7 @@ func NewJWTManager(cfg *config.JWTConfig) *JWTManager {
 		cfg.ExpiresIn = 1 * 24 * 60 * 60 * 1000
 	}
 	return &JWTManager{
-		secretKey: cfg.SecretKey,
+		secretKey: []byte(cfg.SecretKey),
 		expiresIn: cfg.ExpiresIn,
 	}
 }

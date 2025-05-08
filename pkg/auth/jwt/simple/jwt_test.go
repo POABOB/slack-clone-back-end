@@ -21,7 +21,7 @@ const (
 // setupTestJWTManager initializes a JWTManager instance with test-specific configurations.
 func setupTestJWTManager() *JWTManager {
 	return NewJWTManager(&config.JWTConfig{
-		SecretKey: []byte(SecretKey),
+		SecretKey: SecretKey,
 		ExpiresIn: ExpiresIn,
 	})
 }
@@ -29,7 +29,7 @@ func setupTestJWTManager() *JWTManager {
 // setupTestJWTManagerExpiresFast creates a JWTManager with a test secret key and an expiry duration set to a minimal value.
 func setupTestJWTManagerExpiresFast() *JWTManager {
 	return NewJWTManager(&config.JWTConfig{
-		SecretKey: []byte(SecretKey),
+		SecretKey: SecretKey,
 		ExpiresIn: ExpiresInFast,
 	})
 }
@@ -89,7 +89,7 @@ func TestJWTManager(t *testing.T) {
 
 		// 測試使用錯誤的密鑰
 		wrongCfg := &config.JWTConfig{
-			SecretKey: []byte("wrong-secret-key"),
+			SecretKey: "wrong-secret-key",
 			ExpiresIn: ExpiresIn,
 		}
 		wrongManager := NewJWTManager(wrongCfg)
@@ -192,7 +192,7 @@ func TestJWTManager(t *testing.T) {
 	t.Run("JWT Manager Configuration", func(t *testing.T) {
 		// 測試默認過期時間
 		cfg := &config.JWTConfig{
-			SecretKey: []byte(SecretKey),
+			SecretKey: SecretKey,
 		}
 		manager := NewJWTManager(cfg)
 		assert.Equal(t, 24*60*60*1000, manager.GetExpiresIn())
@@ -200,7 +200,7 @@ func TestJWTManager(t *testing.T) {
 		// 測試自定義過期時間
 		customExpiresIn := 12 * 60 * 60 * 1000 // 12 hours
 		cfg = &config.JWTConfig{
-			SecretKey: []byte(SecretKey),
+			SecretKey: SecretKey,
 			ExpiresIn: customExpiresIn,
 		}
 		manager = NewJWTManager(cfg)

@@ -42,12 +42,15 @@ type RedisConfig struct {
 }
 
 type JWTConfig struct {
-	SecretKey []byte
+	SecretKey string
 	ExpiresIn int
 }
 
-func LoadConfig(path string) (*Config, error) {
-	viper.SetConfigFile(path)
+func LoadConfig() (*Config, error) {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("./config")
 	viper.AutomaticEnv()
 
 	// TODO use logger

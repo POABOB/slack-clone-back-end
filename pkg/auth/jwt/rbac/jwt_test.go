@@ -21,7 +21,7 @@ const (
 // setupTestRBACJWTManager initializes a RBACJWTManager instance with test-specific configurations.
 func setupTestRBACJWTManager() *RBACJWTManager {
 	return NewRBACJWTManager(&config.JWTConfig{
-		SecretKey: []byte(SecretKey),
+		SecretKey: SecretKey,
 		ExpiresIn: ExpiresIn,
 	})
 }
@@ -29,7 +29,7 @@ func setupTestRBACJWTManager() *RBACJWTManager {
 // setupTestRBACJWTManagerExpiresFast creates a RBACJWTManager with a test secret key and an expiry duration set to a minimal value.
 func setupTestRBACJWTManagerExpiresFast() *RBACJWTManager {
 	return NewRBACJWTManager(&config.JWTConfig{
-		SecretKey: []byte(SecretKey),
+		SecretKey: SecretKey,
 		ExpiresIn: ExpiresInFast,
 	})
 }
@@ -96,7 +96,7 @@ func TestRBACJWTManager(t *testing.T) {
 
 		// 測試使用錯誤的密鑰
 		wrongCfg := &config.JWTConfig{
-			SecretKey: []byte("wrong-secret-key"),
+			SecretKey: "wrong-secret-key",
 			ExpiresIn: ExpiresIn,
 		}
 		wrongManager := NewRBACJWTManager(wrongCfg)
