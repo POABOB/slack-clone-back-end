@@ -1,4 +1,8 @@
-package domain
+package auth
+
+import (
+	"github.com/POABOB/slack-clone-back-end/services/user-service/internal/domain/user"
+)
 
 // LoginRequest 登入結構體
 type LoginRequest struct {
@@ -50,4 +54,11 @@ func NewTokenResponse(token string) *TokenResponse {
 	return &TokenResponse{
 		Token: token,
 	}
+}
+
+// AuthService 驗證邏輯介面
+type AuthService interface {
+	Register(user *user.User) error
+	Login(email, password string) (string, error)
+	GenerateToken(user *user.User) (string, error)
 }

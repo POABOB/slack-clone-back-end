@@ -1,0 +1,34 @@
+server:
+  host: "0.0.0.0"
+  port: 8080
+  mode: "debug"
+
+database:
+  host: "postgres"
+  port: 5432
+  user: "postgres"
+  password: "postgres"
+  dbname: "user-service"
+  sslmode: "disable"
+  maxIdleConns: 10
+  maxOpenConns: 100
+
+redis:
+  host: "redis"
+  port: 6379
+  password: ""
+  db: 0
+
+router:
+  apiVersion: "v1"
+  enableCORS: true
+  enableRequestLog: true
+  enableErrorHandler: true
+  enableRateLimit: true
+  rateLimitConfig:
+    requestsPerSecond: 50
+    burst: 100
+
+jwt:
+  secretKey: "my-secret-key-please-change-it"
+  expiresIn: 86400000
